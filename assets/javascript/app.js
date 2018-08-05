@@ -41,6 +41,7 @@ function getGiphy(event) {
                 appObj.lasttag = $(event.target).text();
                 queryURL += $(event.target).text();
                 appObj.gifcount = 0;
+                $(".imagelocation").empty();
             break;
         }
         queryURL += "&limit=10" + appObj.rating + $(".userselect").val();
@@ -72,13 +73,11 @@ function query(queryURL){
                     var title = $("<h1>");
                     title.addClass("title");
                     title.text(response.data[i].title);
-                    gifDiv.append(title);
-                    gifDiv.append(img);
                     var rating = $("<h2>");
                     rating.addClass("rating");
                     rating.text("Rating : " + response.data[i].rating);
-                    gifDiv.append(rating);
                     img.on("click", gifClick);
+                    gifDiv.append(title,$("<br>"),img,rating);
                     $(".imagelocation").append(gifDiv);
                 }
         }); 

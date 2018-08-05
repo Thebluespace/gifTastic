@@ -1,12 +1,10 @@
 body,html {
     height: 100%;
 }
-
 .buttonspace{
     width: 100%;
     height: auto;
 }
-
 .userinput {
     margin: 3% 20% 3% 20%;
 }
@@ -31,10 +29,24 @@ body,html {
     padding: 15px;
     margin: 5px;
     border: 2px solid;
+    background-color: black;
+    text-align: center;
 }
 .rating {
     line-height: 1;
     text-align: center;
     font-size: 20px;
     font-weight: bolder;
+    color: white;
+}
+.title {
+    line-height: 1;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bolder;
+    color: white;
+}
+.gif {
+    width: auto;
+    margin: auto;
 }
