@@ -12,46 +12,58 @@ var appObj = {
 // API KEY nXeYSnoxMTwVbTAhSpvKiYWczNv5saTx
 function getGiphy(event) {
     try {
-        var queryURL = appObj.queryURL + $(event.target).text();
-        if ($(event.target).attr("id") === "addPhrase"){
-            if(appObj.keywords.indexOf($(".usertext").val()) === -1){
-                event.preventDefault();
-                addPhrase($(".usertext").val());
-                var queryURL = appObj.queryURL + $(".usertext").val();
-            }
-        } else if ($(event.target).attr("id") != "getGiphier"){
-            var queryURL = appObj.queryURL + $(event.target).text();
+        event.preventDefault();
+        var queryURL = appObj.queryURL;
+        var eventID = $(event.target).attr("id");
+        switch(eventID){
+            case "addPhrase":
+                if ($(".usertext").val() === ""){
+                    return;
+                }
+                if(appObj.keywords.indexOf($(".usertext").val()) === -1){    
+                    addPhrase($(".usertext").val());
+                }
+                queryURL += $(".usertext").val();
+                appObj.gifcount = 0;
+                $(".imagelocation").empty();
+            break;
+
+            case "getGiphier":
+                if( appObj.gifcount >= 0){
+                    appObj.gifcount += 10;
+                    queryURL += appObj.lasttag + "&offset=" + appObj.gifcount;
+                } else {
+                    return;
+                }
+            break;
+
+            default:
+                appObj.lasttag = $(event.target).text();
+                queryURL += $(event.target).text();
+                appObj.gifcount = 0;
+            break;
         }
-        if ($(event.target).attr("id") != "getGiphier"){
-            $(".imagelocation").empty();
-            appObj.lasttag = $(event.target).text();
-            appObj.gifcount = 0;
-        } else if ($(event.target).attr("id") == "getGiphier") {
-            event.preventDefault();
-            if( appObj.gifcount === 0){
-                appObj.gifcount += 10;
-                var queryURL = appObj.queryURL + appObj.lasttag;
-                queryURL += "&offset=" + appObj.gifcount;
-            } else {
-                return;
-            }
-        }
-        
         queryURL += "&limit=10" + appObj.rating + $(".userselect").val();
+        query(queryURL);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+function query(queryURL){
+    try {
         $.ajax({
             url: queryURL,
             method: "GET"
         }).then(function(response){
-            try {
             for (i=0; i < response.data.length; i++){
-                
                     var data = response.data[i].images;
                     var img = $("<img>");
                     img.addClass("gif");
                     img.attr("id","gif"+i);
                     img.attr("src", data.original_still.url);
                     img.attr("height",data.fixed_height.height);
-                    img.attr("height",data.fixed_height.height);
+                    img.attr("width",data.fixed_height.width);
                     img.attr("data-still", data.original_still.url);
                     img.attr("data-gif", data.fixed_height.url);
                     img.attr("state","still");
@@ -68,25 +80,22 @@ function getGiphy(event) {
                     gifDiv.append(rating);
                     img.on("click", gifClick);
                     $(".imagelocation").append(gifDiv);
-
                 }
-            } catch (error) {
-                console.error(error);
-                i++;
-            }
-        });   
+        }); 
     } catch (error) {
-        console.log(error);
-    }
+        console.error(error);
+    }  
 }
 
 function gifClick(event) {
     try {
-        console.log(event.target);
+        //console.log(event.target);
         if($(event.target).attr("state") == "still"){
             $(event.target).attr("src",$(event.target).attr("data-gif"));
+            $(event.target).attr("state","gif");
         } else {
             $(event.target).attr("src",$(event.target).attr("data-still"));
+            $(event.target).attr("state","still");
         }
     } catch (error) {
         console.log(error);
@@ -102,8 +111,9 @@ function addPhrase(text){
         button.attr("id","button" + appObj.buttoncount);
         button.text(text);
         $(".buttonspace").append(button);
+        appObj.lasttag = text;
     } catch (error) {
-        console.error(error)   ;
+        console.error(error);
     }
 }
 
